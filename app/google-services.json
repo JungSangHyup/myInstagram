@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "24047239005",
+    "project_id": "myinstagram-abeac",
+    "storage_bucket": "myinstagram-abeac.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:24047239005:android:5977dfb223db709bba32b4",
+        "android_client_info": {
+          "package_name": "com.example.myinstagram"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "24047239005-21ps9vc99h0knr7oe42kdrqmuh28jnm6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBAJ5Bvjl6gr0gKKZX1fMvyKidNCsMcAhI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "24047239005-21ps9vc99h0knr7oe42kdrqmuh28jnm6.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
