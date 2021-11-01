@@ -12,6 +12,7 @@ import androidx.core.content.ContextCompat
 import com.example.myinstagram.databinding.ActivityMainBinding
 import com.example.myinstagram.navigation.*
 import com.google.android.material.navigation.NavigationBarView
+import com.google.firebase.auth.FirebaseAuth
 
 class MainActivity : AppCompatActivity(){
     private val binding by lazy {
@@ -23,6 +24,7 @@ class MainActivity : AppCompatActivity(){
         setContentView(binding.root)
 
         ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), 1)
+
 
         binding.bottomNavigation.setOnItemSelectedListener {
             when(it.itemId){
@@ -49,11 +51,17 @@ class MainActivity : AppCompatActivity(){
                 }
                 R.id.action_account -> {
                     var userFragment = UserFragment()
+                    var bundle = Bundle()
+                    var uid = FirebaseAuth.getInstance().currentUser?.uid
+                    bundle.putString("destinationUid", uid)
+                    userFragment.arguments = bundle
                     supportFragmentManager.beginTransaction().replace(R.id.main_content, userFragment).commit()
                     true
                 }
                 else -> false
             }
         }
+
+        binding.bottomNavigation.selectedItemId = R.id.action_home
     }
 }

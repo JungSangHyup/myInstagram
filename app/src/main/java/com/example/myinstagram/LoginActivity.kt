@@ -28,7 +28,7 @@ class LoginActivity : AppCompatActivity() {
         setContentView(binding.root)
         auth = FirebaseAuth.getInstance()
         binding.emailLoginButton.setOnClickListener{
-            signinAndSignup()
+            signinemail()
         }
         binding.googleSigninButton.setOnClickListener{
             googleLogin()
@@ -89,9 +89,8 @@ class LoginActivity : AppCompatActivity() {
     }
 
     fun signinemail(){
-        auth?.createUserWithEmailAndPassword(binding.emailEdittext.text.toString(), binding.passwordEdittext.text.toString())
-            ?.addOnCompleteListener {
-                    task ->
+        auth?.signInWithEmailAndPassword(binding.emailEdittext.text.toString(), binding.passwordEdittext.text.toString())
+            ?.addOnCompleteListener{ task ->
                 if(task.isSuccessful){
                     //Creating a user account
                     moveMaininPage(task.result?.user)
