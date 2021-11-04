@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.MenuItem
+import android.view.View
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.example.myinstagram.databinding.ActivityMainBinding
@@ -25,7 +26,7 @@ class MainActivity : AppCompatActivity(){
 
         ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), 1)
 
-
+        setToolbarDefault()
         binding.bottomNavigation.setOnItemSelectedListener {
             when(it.itemId){
                 R.id.action_home -> {
@@ -62,6 +63,13 @@ class MainActivity : AppCompatActivity(){
             }
         }
 
+
         binding.bottomNavigation.selectedItemId = R.id.action_home
+    }
+
+    fun setToolbarDefault(){
+        binding.toolbarUsername.visibility = View.GONE
+        binding.toolbarBtnBack.visibility = View.GONE
+        binding.toolbarTitleImage.visibility = View.VISIBLE
     }
 }

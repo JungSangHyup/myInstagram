@@ -20,7 +20,6 @@ import java.util.*
 
 class AddPhotoActivity : AppCompatActivity(){
     private val binding by lazy { ActivityAddPhotoBinding.inflate(layoutInflater)}
-    var PICK_IMAGE_FROM_ALBUM = 0
     lateinit var storage : FirebaseStorage
     lateinit var photoUri : Uri
     lateinit var galleryLauncher : ActivityResultLauncher<String>
