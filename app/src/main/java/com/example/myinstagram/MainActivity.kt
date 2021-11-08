@@ -8,17 +8,26 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
+import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.example.myinstagram.databinding.ActivityMainBinding
 import com.example.myinstagram.navigation.*
+import com.example.myinstagram.util.FcmPush
+import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.material.navigation.NavigationBarView
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.iid.FirebaseInstanceIdReceiver
+import com.google.firebase.iid.internal.FirebaseInstanceIdInternal
+import com.google.firebase.messaging.FirebaseMessaging
 
 class MainActivity : AppCompatActivity(){
     private val binding by lazy {
         ActivityMainBinding.inflate(layoutInflater)
     }
+
+    lateinit var firestore : FirebaseFirestore
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -65,6 +74,12 @@ class MainActivity : AppCompatActivity(){
 
 
         binding.bottomNavigation.selectedItemId = R.id.action_home
+        registerPushToken()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        FcmPush.instance.sendMessage("xezzPNcqQdcPfIhSxC8DN4DhyUJ2", "hi", "bye")
     }
 
     fun setToolbarDefault(){
@@ -72,4 +87,23 @@ class MainActivity : AppCompatActivity(){
         binding.toolbarBtnBack.visibility = View.GONE
         binding.toolbarTitleImage.visibility = View.VISIBLE
     }
+
+
+    fun registerPushToken(){
+        FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
+            if (!task.isSuccessful) {
+                return@OnCompleteListener
+            }
+
+            val token = task.result
+            val uid = FirebaseAuth.getInstance().currentUser?.uid
+            val map = mutableMapOf<String, Any>()
+            map["pushToken"] = token!!
+
+            FirebaseFirestore.getInstance().collection("pushtokens").document(uid!!).set(map)
+
+        })
+    }
+
+
 }

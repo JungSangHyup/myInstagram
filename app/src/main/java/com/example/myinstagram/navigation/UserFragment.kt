@@ -21,6 +21,7 @@ import com.example.myinstagram.MainActivity
 import com.example.myinstagram.R
 import com.example.myinstagram.databinding.ActivityMainBinding
 import com.example.myinstagram.databinding.FragmentUserBinding
+import com.example.myinstagram.navigation.model.AlarmDTO
 import com.example.myinstagram.navigation.model.ContentDTO
 import com.example.myinstagram.navigation.model.FollowDTO
 import com.google.android.gms.tasks.Task
@@ -101,6 +102,17 @@ class UserFragment : Fragment() {
         return view.root
     }
 
+    fun followerAlarm(destinationUid : String){
+        var alarmDTO = AlarmDTO()
+        alarmDTO.destinationUid = destinationUid
+        alarmDTO.userId = auth?.currentUser?.email
+        alarmDTO.uid = auth?.currentUser?.uid
+        alarmDTO.kind = 2
+        alarmDTO.timestamp = System.currentTimeMillis()
+        FirebaseFirestore.getInstance().collection("alarms").document().set(alarmDTO)
+    }
+
+
     fun getFollowerAndFollowing(){
         firestore.collection("users")?.document(uid!!).addSnapshotListener { documentSnapshot, firebaseStoreException ->
             if(documentSnapshot == null) return@addSnapshotListener
@@ -134,6 +146,7 @@ class UserFragment : Fragment() {
                 followDTO = FollowDTO()
                 followDTO!!.followingCount = 1
                 followDTO!!.followings[uid!!] = true
+
             }
 
             if(followDTO.followings.containsKey(uid)){
@@ -143,6 +156,7 @@ class UserFragment : Fragment() {
             }else{
                 followDTO.followingCount = followDTO.followingCount + 1
                 followDTO.followings[uid!!] = true
+
             }
             transaction.set(tsDocFollowing, followDTO)
             return@runTransaction
@@ -157,6 +171,7 @@ class UserFragment : Fragment() {
                 followDTO!!.followers[uid!!] = true
 
                 transaction.set(tsDocFollower, followDTO!!)
+                followerAlarm(uid!!)
                 return@runTransaction
             }
 
@@ -167,6 +182,7 @@ class UserFragment : Fragment() {
             }else{
                 followDTO!!.followerCount = followDTO!!.followerCount + 1
                 followDTO!!.followers[currentUserUid!!] = true
+                followerAlarm(uid!!)
             }
             transaction.set(tsDocFollower, followDTO!!)
             return@runTransaction
