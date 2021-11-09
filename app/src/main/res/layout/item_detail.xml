@@ -22,12 +22,12 @@
             android:layout_height="wrap_content"
             android:text="User name" />
     </LinearLayout>
-
     <ImageView
         android:id="@+id/detailviewitem_imageview_content"
         android:layout_width="match_parent"
         android:layout_height="250dp"
         android:scaleType="fitXY" />
+
 
     <LinearLayout
         android:layout_width="match_parent"

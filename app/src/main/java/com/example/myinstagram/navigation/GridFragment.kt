@@ -1,5 +1,6 @@
 package com.example.myinstagram.navigation
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -8,15 +9,11 @@ import android.widget.ImageView
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
-import com.example.myinstagram.R
 import com.example.myinstagram.databinding.FragmentGridBinding
-import com.example.myinstagram.databinding.FragmentUserBinding
 import com.example.myinstagram.navigation.model.ContentDTO
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
 class GridFragment : Fragment() {
@@ -42,13 +39,19 @@ class GridFragment : Fragment() {
 
     inner class UserFragmentRecyclerViewAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>(){
         var contentDTOs : MutableList<ContentDTO> = mutableListOf()
+        var contentUidList : MutableList<String> = mutableListOf()
 
         init {
             firestore?.collection("images")?.addSnapshotListener { querySnapshot, firebaseFirestoreException ->
+                contentDTOs.clear()
+                contentUidList.clear()
+
                 if(querySnapshot == null) return@addSnapshotListener
 
-                for(snapshot in querySnapshot.documents){
-                    contentDTOs.add(snapshot.toObject(ContentDTO::class.java)!!)
+                for(snapshot in querySnapshot!!.documents){
+                    var item = snapshot.toObject(ContentDTO::class.java)
+                    contentDTOs.add(item!!)
+                    contentUidList.add(snapshot.id)
                 }
                 notifyDataSetChanged()
             }
@@ -71,6 +74,13 @@ class GridFragment : Fragment() {
 
             Glide.with(holder.itemView.context).load(contentDTOs[position].imageUrl).apply(
                 RequestOptions().centerCrop()).into(imageView)
+
+            holder.itemView.setOnClickListener { v ->
+                var intent = Intent(v.context, CommentActivity::class.java)
+                intent.putExtra("contentUid", contentUidList[position])
+                intent.putExtra("destinationUid", contentDTOs[position].uid)
+                startActivity(intent)
+            }
         }
 
         override fun getItemCount(): Int {

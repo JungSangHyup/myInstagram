@@ -1,6 +1,8 @@
 package com.example.myinstagram.navigation
 
+import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
@@ -24,6 +26,9 @@ class CommentActivity :AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(activityCommentBinding.root)
+
+        var inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE)
+
         contentUid = intent.getStringExtra("contentUid").toString()
         destinationUid = intent.getStringExtra("destinationUid").toString()
 
@@ -42,6 +47,21 @@ class CommentActivity :AppCompatActivity() {
             commentAlarm(destinationUid!!, activityCommentBinding.commentEditMessage.text.toString())
             activityCommentBinding.commentEditMessage.setText("")
         }
+
+        getImage(contentUid)
+    }
+
+    fun getImage(contentUid: String){
+        FirebaseFirestore.getInstance()
+            .collection("images")
+            .document(contentUid!!)
+            .get().addOnSuccessListener { doc ->
+                if(doc == null){
+                    return@addOnSuccessListener
+                }
+                var imageUrl = doc.data?.get("imageUrl")
+                Glide.with(this).load(imageUrl).into(activityCommentBinding.commentImageview)
+            }
     }
 
     fun commentAlarm(destinationUid: String, message : String){

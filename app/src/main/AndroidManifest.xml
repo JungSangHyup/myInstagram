@@ -29,6 +29,7 @@
         </activity>
         <activity
             android:name=".navigation.CommentActivity"
+            android:windowSoftInputMode="adjustPan"
             android:exported="true" >
         </activity>
         <!-- Set custom default icon. This is used when no icon is set for incoming notification messages.

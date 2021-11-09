@@ -30,11 +30,17 @@
         android:background="@color/colorDivision"
         android:orientation="horizontal" />
 
+        <ImageView
+            android:id="@+id/comment_imageview"
+            android:layout_width="match_parent"
+            android:layout_height="250dp"
+            android:scaleType="fitXY" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/comment_recyclerview"
-        android:layout_below="@+id/toolbar_division"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/comment_imageview"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="30dp"></androidx.recyclerview.widget.RecyclerView>
 
