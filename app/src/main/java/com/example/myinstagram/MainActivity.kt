@@ -77,11 +77,6 @@ class MainActivity : AppCompatActivity(){
         registerPushToken()
     }
 
-    override fun onStop() {
-        super.onStop()
-        FcmPush.instance.sendMessage("xezzPNcqQdcPfIhSxC8DN4DhyUJ2", "hi", "bye")
-    }
-
     fun setToolbarDefault(){
         binding.toolbarUsername.visibility = View.GONE
         binding.toolbarBtnBack.visibility = View.GONE

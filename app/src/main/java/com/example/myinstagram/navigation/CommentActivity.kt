@@ -8,10 +8,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
+import com.example.myinstagram.R
 import com.example.myinstagram.databinding.ActivityCommentBinding
 import com.example.myinstagram.databinding.ItemCommentBinding
 import com.example.myinstagram.navigation.model.AlarmDTO
 import com.example.myinstagram.navigation.model.ContentDTO
+import com.example.myinstagram.util.FcmPush
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
@@ -51,6 +53,9 @@ class CommentActivity :AppCompatActivity() {
         alarmDTO.timestamp = System.currentTimeMillis()
         alarmDTO.message = message
         FirebaseFirestore.getInstance().collection("alarms").document().set(alarmDTO)
+
+        var msg = FirebaseAuth.getInstance().currentUser?.email + " " + getString(R.string.alarm_follow) + " of \n" + message
+        FcmPush.instance.sendMessage(destinationUid, "Howlstargram", msg)
     }
 
     inner class CommentRecyclerviewAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {

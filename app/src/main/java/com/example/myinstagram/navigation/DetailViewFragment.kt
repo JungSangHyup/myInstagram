@@ -9,11 +9,13 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.example.myinstagram.LoginActivity
 import com.example.myinstagram.R
 import com.example.myinstagram.databinding.FragmentDetailBinding
 import com.example.myinstagram.databinding.ItemDetailBinding
 import com.example.myinstagram.navigation.model.AlarmDTO
 import com.example.myinstagram.navigation.model.ContentDTO
+import com.example.myinstagram.util.FcmPush
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
@@ -28,6 +30,11 @@ class DetailViewFragment : Fragment() {
         val view = FragmentDetailBinding.inflate(inflater, container, false)
         firestore = FirebaseFirestore.getInstance()
         uid = FirebaseAuth.getInstance().currentUser?.uid
+
+        if(uid == null){
+            val intent = Intent(getActivity(), LoginActivity::class.java)
+            startActivity(intent)
+        }
 
         var linearLayoutManager : LinearLayoutManager = LinearLayoutManager(activity)
         linearLayoutManager.reverseLayout = true
@@ -135,7 +142,8 @@ class DetailViewFragment : Fragment() {
             alarmDTO.timestamp = System.currentTimeMillis()
             FirebaseFirestore.getInstance().collection("alarms").document().set(alarmDTO)
 
-
+            var message = FirebaseAuth.getInstance()?.currentUser?.email + getString(R.string.alarm_favorite)
+            FcmPush.instance.sendMessage(destinationUid, "Howlstargram", message)
         }
 
     }

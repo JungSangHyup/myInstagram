@@ -24,6 +24,7 @@ import com.example.myinstagram.databinding.FragmentUserBinding
 import com.example.myinstagram.navigation.model.AlarmDTO
 import com.example.myinstagram.navigation.model.ContentDTO
 import com.example.myinstagram.navigation.model.FollowDTO
+import com.example.myinstagram.util.FcmPush
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -45,6 +46,7 @@ class UserFragment : Fragment() {
         val view = FragmentUserBinding.inflate(inflater, container, false)
 
         var photoPickterLauncher = registerForActivityResult(ActivityResultContracts.GetContent()){ imageUri ->
+            if(imageUri == null) return@registerForActivityResult
             var uid = FirebaseAuth.getInstance().currentUser?.uid
             var storageRef = FirebaseStorage.getInstance().reference.child("userProfileImages").child(uid!!)
             storageRef.putFile(imageUri!!)
@@ -94,7 +96,7 @@ class UserFragment : Fragment() {
         view.accountRecyclerview.layoutManager = GridLayoutManager(activity, 3)
 
         view.accountIvProfile.setOnClickListener {
-            photoPickterLauncher.launch("image/*")
+            var image = photoPickterLauncher.launch("image/*")
         }
 
         getProfileImage()
@@ -110,6 +112,9 @@ class UserFragment : Fragment() {
         alarmDTO.kind = 2
         alarmDTO.timestamp = System.currentTimeMillis()
         FirebaseFirestore.getInstance().collection("alarms").document().set(alarmDTO)
+
+        var message = auth?.currentUser?.email + getString(R.string.alarm_follow)
+        FcmPush.instance.sendMessage(destinationUid, "Howlstargram", message)
     }
 
 
@@ -146,7 +151,8 @@ class UserFragment : Fragment() {
                 followDTO = FollowDTO()
                 followDTO!!.followingCount = 1
                 followDTO!!.followings[uid!!] = true
-
+                followerAlarm(uid!!)
+                return@runTransaction
             }
 
             if(followDTO.followings.containsKey(uid)){
@@ -156,7 +162,7 @@ class UserFragment : Fragment() {
             }else{
                 followDTO.followingCount = followDTO.followingCount + 1
                 followDTO.followings[uid!!] = true
-
+                followerAlarm(uid!!)
             }
             transaction.set(tsDocFollowing, followDTO)
             return@runTransaction
@@ -171,7 +177,7 @@ class UserFragment : Fragment() {
                 followDTO!!.followers[uid!!] = true
 
                 transaction.set(tsDocFollower, followDTO!!)
-                followerAlarm(uid!!)
+
                 return@runTransaction
             }
 
@@ -182,7 +188,7 @@ class UserFragment : Fragment() {
             }else{
                 followDTO!!.followerCount = followDTO!!.followerCount + 1
                 followDTO!!.followers[currentUserUid!!] = true
-                followerAlarm(uid!!)
+
             }
             transaction.set(tsDocFollower, followDTO!!)
             return@runTransaction
