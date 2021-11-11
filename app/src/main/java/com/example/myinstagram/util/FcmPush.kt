@@ -1,6 +1,6 @@
 package com.example.myinstagram.util
 
-import com.example.myinstagram.navigation.model.PushDTO
+import com.example.myinstagram.model.PushDTO
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.gson.Gson
 import com.squareup.okhttp.*

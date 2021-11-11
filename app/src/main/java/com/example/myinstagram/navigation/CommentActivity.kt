@@ -2,7 +2,6 @@ package com.example.myinstagram.navigation
 
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
@@ -13,8 +12,8 @@ import com.bumptech.glide.request.RequestOptions
 import com.example.myinstagram.R
 import com.example.myinstagram.databinding.ActivityCommentBinding
 import com.example.myinstagram.databinding.ItemCommentBinding
-import com.example.myinstagram.navigation.model.AlarmDTO
-import com.example.myinstagram.navigation.model.ContentDTO
+import com.example.myinstagram.model.AlarmDTO
+import com.example.myinstagram.model.ContentDTO
 import com.example.myinstagram.util.FcmPush
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore

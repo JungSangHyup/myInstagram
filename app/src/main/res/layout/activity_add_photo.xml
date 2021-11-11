@@ -42,9 +42,12 @@
         android:id="@+id/addphoto_image"
         android:layout_width="100dp"
         android:layout_height="100dp"
-        android:layout_alignParentLeft="true"
         android:layout_below="@id/toolbar_division"
-        android:layout_margin="8dp"
+        android:layout_alignParentLeft="true"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
         tools:src="@drawable/ic_account" />
 
     <com.google.android.material.textfield.TextInputLayout
@@ -64,15 +67,36 @@
             android:inputType="text" />
     </com.google.android.material.textfield.TextInputLayout>
 
-    <Button
-        android:id="@+id/addphoto_btn_upload"
-        android:textColor="@color/black"
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/edithashtag"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/edittext"
         android:layout_margin="8dp"
+        android:layout_toRightOf="@id/addphoto_image">
+
+        <EditText
+            android:id="@+id/addphoto_edit_hashtag"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:gravity="top"
+            android:hint="HashTag"
+            android:inputType="text"
+            android:textSize="20sp" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <Button
+        android:id="@+id/addphoto_btn_upload"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/edithashtag"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
         android:layout_toRightOf="@id/addphoto_image"
         android:text="@string/upload_image"
+        android:textColor="@color/black"
         android:theme="@style/ButtonStyle" />
 
 </RelativeLayout>

@@ -19,9 +19,9 @@ import com.example.myinstagram.LoginActivity
 import com.example.myinstagram.R
 import com.example.myinstagram.databinding.ActivityMainBinding
 import com.example.myinstagram.databinding.FragmentUserBinding
-import com.example.myinstagram.navigation.model.AlarmDTO
-import com.example.myinstagram.navigation.model.ContentDTO
-import com.example.myinstagram.navigation.model.FollowDTO
+import com.example.myinstagram.model.AlarmDTO
+import com.example.myinstagram.model.ContentDTO
+import com.example.myinstagram.model.FollowDTO
 import com.example.myinstagram.util.FcmPush
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth

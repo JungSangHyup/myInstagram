@@ -2,6 +2,7 @@ package com.example.myinstagram.navigation
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,13 +14,14 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.example.myinstagram.databinding.FragmentGridBinding
-import com.example.myinstagram.navigation.model.ContentDTO
+import com.example.myinstagram.model.ContentDTO
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
 class GridFragment : Fragment() {
     lateinit var firestore: FirebaseFirestore
     lateinit var fragmentView : FragmentGridBinding
-
+    var uid : String? = null
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -27,6 +29,9 @@ class GridFragment : Fragment() {
     ): View? {
         val view = FragmentGridBinding.inflate(inflater, container, false)
         firestore = FirebaseFirestore.getInstance()
+        uid = FirebaseAuth.getInstance().currentUser?.uid
+
+
 
         fragmentView = view
 
@@ -34,8 +39,10 @@ class GridFragment : Fragment() {
 
         fragmentView.gridfragmentRecyclerview?.adapter = UserFragmentRecyclerViewAdapter()
         fragmentView.gridfragmentRecyclerview?.layoutManager = gridLayoutManager
+
         return view.root
     }
+
 
     inner class UserFragmentRecyclerViewAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>(){
         var contentDTOs : MutableList<ContentDTO> = mutableListOf()
@@ -55,6 +62,7 @@ class GridFragment : Fragment() {
                 }
                 notifyDataSetChanged()
             }
+
         }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {

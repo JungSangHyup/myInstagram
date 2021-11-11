@@ -8,11 +8,14 @@ import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
+import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
 import com.example.myinstagram.LoginActivity
 import com.example.myinstagram.R
 import com.example.myinstagram.databinding.FragmentDetailBinding
@@ -23,7 +26,7 @@ import com.example.myinstagram.util.FcmPush
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
-class DetailViewFragment : Fragment() {
+class HashDetailFragment : Fragment() {
     lateinit var firestore: FirebaseFirestore
     var uid : String? = null
     override fun onCreateView(
@@ -59,7 +62,8 @@ class DetailViewFragment : Fragment() {
 
 
         init {
-            firestore?.collection("images")?.orderBy("timestamp")?.addSnapshotListener { querySnapshot, firebaseFirestoreException ->
+            var hashtag = arguments?.getString("hashtag").toString()
+            firestore?.collection("images")?.whereArrayContains("hashtags", hashtag).addSnapshotListener { querySnapshot, firebaseFirestoreException ->
                 contentDTOs.clear()
                 contentUidList.clear()
 
@@ -180,6 +184,4 @@ class DetailViewFragment : Fragment() {
         }
 
     }
-
 }
-

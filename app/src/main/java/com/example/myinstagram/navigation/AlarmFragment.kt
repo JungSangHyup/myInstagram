@@ -12,7 +12,7 @@ import com.bumptech.glide.request.RequestOptions
 import com.example.myinstagram.R
 import com.example.myinstagram.databinding.FragmentAlarmBinding
 import com.example.myinstagram.databinding.ItemCommentBinding
-import com.example.myinstagram.navigation.model.AlarmDTO
+import com.example.myinstagram.model.AlarmDTO
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 

@@ -3,12 +3,11 @@ package com.example.myinstagram.navigation
 import android.app.Activity
 import android.net.Uri
 import android.os.Bundle
-import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import com.example.myinstagram.databinding.ActivityAddPhotoBinding
-import com.example.myinstagram.navigation.model.ContentDTO
+import com.example.myinstagram.model.ContentDTO
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -37,14 +36,33 @@ class AddPhotoActivity : AppCompatActivity(){
         firestore = FirebaseFirestore.getInstance()
 
         galleryLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) {
-            uri -> binding.addphotoImage.setImageURI(uri)
+            uri ->
+            if(uri == null) return@registerForActivityResult
+            binding.addphotoImage.setImageURI(uri)
             photoUri = uri
-            contentUpload()
-            Toast.makeText(this, "Hello", Toast.LENGTH_LONG)
+
         }
-        binding.addphotoBtnUpload.setOnClickListener {
+
+        binding.addphotoImage.setOnClickListener {
             galleryLauncher.launch("image/*")
         }
+        binding.addphotoBtnUpload.setOnClickListener {
+            contentUpload()
+        }
+    }
+
+    fun getHashtag(): MutableList<String> {
+        val hashTags = mutableListOf<String>()
+        val hashReg = Regex("\\B(\\#[a-zA-Z]+\\b)(?!;)");
+
+        var hashString = binding.addphotoEditHashtag.text
+
+        val matchResult : Sequence<MatchResult> = hashReg.findAll(hashString)
+
+        matchResult.forEach {
+            hashTags.add(it.value)
+        }
+        return hashTags
     }
 
     fun contentUpload(){
@@ -64,6 +82,7 @@ class AddPhotoActivity : AppCompatActivity(){
             contentDTO.userId = auth?.currentUser?.email
             contentDTO.explain = binding.addphotoEditExplain.text.toString()
             contentDTO.timestamp = System.currentTimeMillis()
+            contentDTO.hashtags = getHashtag()
             firestore?.collection("images")?.document()?.set(contentDTO)
             setResult(Activity.RESULT_OK)
             finish()

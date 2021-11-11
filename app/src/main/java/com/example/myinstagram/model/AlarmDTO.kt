@@ -1,4 +1,4 @@
-package com.example.myinstagram.navigation.model
+package com.example.myinstagram.model
 
 data class AlarmDTO(
     var destinationUid: String? = null,

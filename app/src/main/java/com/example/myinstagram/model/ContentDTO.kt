@@ -1,10 +1,11 @@
-package com.example.myinstagram.navigation.model
+package com.example.myinstagram.model
 
 data class ContentDTO(var explain: String? = null,
                       var imageUrl: String? = null,
                       var uid: String? = null,
                       var userId: String? = null,
                       var timestamp: Long? = null,
+                      var hashtags : MutableList<String> = mutableListOf(),
                       var favoriteCount: Int = 0,
                       var favorites: MutableMap<String, Boolean> = HashMap()) {
 
