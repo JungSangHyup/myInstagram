@@ -28,6 +28,8 @@ class MainActivity : AppCompatActivity(){
 
         ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), 1)
 
+        var uid = FirebaseAuth.getInstance().currentUser?.uid
+
         setToolbarDefault()
         binding.bottomNavigation.setOnItemSelectedListener {
             when(it.itemId){

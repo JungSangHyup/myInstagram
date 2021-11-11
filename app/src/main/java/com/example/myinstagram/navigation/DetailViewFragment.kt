@@ -13,6 +13,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
 import com.example.myinstagram.LoginActivity
 import com.example.myinstagram.R
 import com.example.myinstagram.databinding.FragmentDetailBinding
@@ -88,7 +89,17 @@ class DetailViewFragment : Fragment() {
 
             //Image
             Glide.with(holder.itemView.context).load(contentDTOs!![position].imageUrl).into(holder.binding.detailviewitemImageviewContent)
-            Glide.with(holder.itemView.context).load(contentDTOs!![position].imageUrl).into(holder.binding.detailviewitemProfileImage)
+
+            uid?.let {
+                firestore?.collection("profileImages").document(it).addSnapshotListener { documentSnapshot, firebaseFirestoreException ->
+                    if(documentSnapshot == null) return@addSnapshotListener
+                    if(documentSnapshot.data != null){
+                        var url = documentSnapshot.data!!["image"]
+                        activity?.let { Glide.with(it).load(url).apply(RequestOptions().circleCrop()).into(holder.binding.detailviewitemProfileImage) }
+                    }
+
+                }
+            }
 
             holder.binding.detailviewitemExplainTextview.text = contentDTOs!![position].explain
 
@@ -178,8 +189,6 @@ class DetailViewFragment : Fragment() {
             var message = FirebaseAuth.getInstance()?.currentUser?.email + getString(R.string.alarm_favorite)
             FcmPush.instance.sendMessage(destinationUid, "Howlstargram", message)
         }
-
     }
-
 }
 
