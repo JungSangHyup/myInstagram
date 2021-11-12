@@ -93,9 +93,10 @@ class UserFragment : Fragment() {
         fragmentView.accountRecyclerview.adapter = UserFragmentRecyclerViewAdapter()
         fragmentView.accountRecyclerview.layoutManager = GridLayoutManager(activity, 3)
 
-        view.accountIvProfile.setOnClickListener {
+        fragmentView.accountIvProfile.setOnClickListener {
             photoPickterLauncher.launch("image/*")
         }
+
 
         getProfileImage()
         getFollowerAndFollowing()
