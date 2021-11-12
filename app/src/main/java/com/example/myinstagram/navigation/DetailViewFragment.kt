@@ -37,11 +37,6 @@ class DetailViewFragment : Fragment() {
         uid = FirebaseAuth.getInstance().currentUser?.uid
 
 
-        if(uid == null){
-            val intent = Intent(getActivity(), LoginActivity::class.java)
-            startActivity(intent)
-        }
-
         var linearLayoutManager : LinearLayoutManager = LinearLayoutManager(activity)
         linearLayoutManager.reverseLayout = true
         linearLayoutManager.stackFromEnd = true
@@ -56,7 +51,20 @@ class DetailViewFragment : Fragment() {
         return view.root
     }
 
-    inner class DetailViewRecyclerViewAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>(){
+    fun favoriteAlarm(destinationUid: String){
+        var alarmDTO = AlarmDTO()
+        alarmDTO.destinationUid = destinationUid
+        alarmDTO.userId = FirebaseAuth.getInstance().currentUser?.email
+        alarmDTO.uid = FirebaseAuth.getInstance().currentUser?.uid
+        alarmDTO.kind = 0
+        alarmDTO.timestamp = System.currentTimeMillis()
+        FirebaseFirestore.getInstance().collection("alarms").document().set(alarmDTO)
+
+        var message = FirebaseAuth.getInstance()?.currentUser?.email + getString(R.string.alarm_favorite)
+        FcmPush.instance.sendMessage(destinationUid, "Howlstargram", message)
+    }
+
+    private inner class DetailViewRecyclerViewAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>(){
         var contentDTOs : MutableList<ContentDTO> = mutableListOf()
         var contentUidList : MutableList<String> = mutableListOf()
         lateinit var itemContext : Context
@@ -93,6 +101,13 @@ class DetailViewFragment : Fragment() {
 
             //Image
             Glide.with(holder.itemView.context).load(contentDTOs!![position].imageUrl).into(holder.binding.detailviewitemImageviewContent)
+            firestore?.collection("profileImages")?.document(contentDTOs[position].uid!!)
+                ?.get()?.addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        val url = task.result["image"]
+                        Glide.with(holder.itemView.context)
+                            .load(url)
+                            .apply(RequestOptions().circleCrop()).into(holder.binding.detailviewitemProfileImage)
 
             var userId = FirebaseAuth.getInstance().currentUser
             firestore?.collection("profileImages").document(userId.toString()).addSnapshotListener { documentSnapshot, firebaseFirestoreException ->
@@ -291,17 +306,21 @@ class DetailViewFragment : Fragment() {
 
         inner class CustomViewHolder(val binding: ItemDetailBinding) : RecyclerView.ViewHolder(binding.root)
 
-        fun favoriteEvent(position : Int){
+        private fun favoriteEvent(position: Int) {
             var tsDoc = firestore?.collection("images")?.document(contentUidList[position])
             firestore?.runTransaction { transaction ->
-                var contentDTO = transaction.get(tsDoc!!).toObject(ContentDTO::class.java)
 
-                if(contentDTO!!.favorites.containsKey(uid)){
-                    contentDTO.favoriteCount = contentDTO?.favoriteCount - 1
+                val uid = FirebaseAuth.getInstance().currentUser!!.uid
+                val contentDTO = transaction.get(tsDoc!!).toObject(ContentDTO::class.java)
+
+                if (contentDTO!!.favorites.containsKey(uid)) {
+                    // Unstar the post and remove self from stars
+                    contentDTO?.favoriteCount = contentDTO?.favoriteCount!! - 1
                     contentDTO?.favorites.remove(uid)
-                }else{
-                    contentDTO?.favoriteCount = contentDTO?.favoriteCount + 1
-                    contentDTO?.favorites[uid!!] = true
+                } else {
+                    // Star the post and add self to stars
+                    contentDTO?.favoriteCount = contentDTO?.favoriteCount!! + 1
+                    contentDTO?.favorites[uid] = true
                     favoriteAlarm(contentDTOs[position].uid!!)
                 }
                 transaction.set(tsDoc, contentDTO)

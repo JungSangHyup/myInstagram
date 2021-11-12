@@ -26,9 +26,14 @@ class MainActivity : AppCompatActivity(){
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
+        if(FirebaseAuth.getInstance().currentUser?.uid == null){
+            var intent = Intent(this, LoginActivity::class.java)
+            startActivity(intent)
+            finish()
+        }
+
         ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), 1)
 
-        var uid = FirebaseAuth.getInstance().currentUser?.uid
 
         setToolbarDefault()
         binding.bottomNavigation.setOnItemSelectedListener {
