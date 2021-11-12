@@ -41,7 +41,7 @@ class UserFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = FragmentUserBinding.inflate(inflater, container, false)
+        fragmentView = FragmentUserBinding.inflate(inflater, container, false)
 
         var photoPickterLauncher = registerForActivityResult(ActivityResultContracts.GetContent()){ imageUri ->
             if(imageUri == null) return@registerForActivityResult
@@ -56,23 +56,21 @@ class UserFragment : Fragment() {
                     FirebaseFirestore.getInstance().collection("profileImages").document(uid!!).set(map)
             }
         }
-
-        fragmentView = view
         uid = arguments?.getString("destinationUid").toString()
         auth = FirebaseAuth.getInstance()
         currentUserUid = auth.currentUser!!.uid
 
         if(uid == currentUserUid){
             //Mypage
-            fragmentView?.accountBtnFollowSignout.text = getString(R.string.signout)
+            fragmentView?.accountBtnFollowSignout.text = activity?.getString(R.string.signout)
             fragmentView?.accountBtnFollowSignout.setOnClickListener {
-                activity?.finish()
                 startActivity(Intent(activity, LoginActivity::class.java))
                 auth?.signOut()
+                activity?.finish()
             }
         }else {
             //OtherUserpage
-            fragmentView?.accountBtnFollowSignout.text = getString(R.string.follow)
+            fragmentView?.accountBtnFollowSignout.text = activity?.getString(R.string.follow)
 
             var mainactivity = ActivityMainBinding.inflate(layoutInflater)
 
@@ -90,16 +88,16 @@ class UserFragment : Fragment() {
 
 
         firestore = FirebaseFirestore.getInstance()
-        view.accountRecyclerview.adapter = UserFragmentRecyclerViewAdapter()
-        view.accountRecyclerview.layoutManager = GridLayoutManager(activity, 3)
+        fragmentView.accountRecyclerview.adapter = UserFragmentRecyclerViewAdapter()
+        fragmentView.accountRecyclerview.layoutManager = GridLayoutManager(activity, 3)
 
-        view.accountIvProfile.setOnClickListener {
-            var image = photoPickterLauncher.launch("image/*")
+        fragmentView.accountIvProfile.setOnClickListener {
+            photoPickterLauncher.launch("image/*")
         }
 
         getProfileImage()
         getFollowerAndFollowing()
-        return view.root
+        return fragmentView.root
     }
 
     fun followerAlarm(destinationUid : String){
@@ -118,23 +116,19 @@ class UserFragment : Fragment() {
 
     fun getFollowerAndFollowing(){
         firestore.collection("users")?.document(uid!!).addSnapshotListener { documentSnapshot, firebaseStoreException ->
-            if(documentSnapshot == null) return@addSnapshotListener
-            var followDTO = documentSnapshot.toObject(FollowDTO::class.java)
-            if(followDTO?.followingCount != null){
-                fragmentView.accountTvFollowingCount.text = followDTO.followingCount.toString()
-            }
-            if(followDTO?.followerCount != null){
+            var followDTO = documentSnapshot?.toObject(FollowDTO::class.java)
+
+            if(followDTO == null) return@addSnapshotListener
+            if(followDTO?.followerCount != null && uid != currentUserUid){
                 fragmentView.accountTvFollowerCount.text = followDTO.followerCount.toString()
-                if(followDTO.followers.containsKey(currentUserUid)){
-                    fragmentView.accountBtnFollowSignout.text = getString(R.string.follow_cancel)
-                    fragmentView.accountBtnFollowSignout.background.setColorFilter(ContextCompat.getColor(requireActivity(), R.color.colorLightGray), PorterDuff.Mode.MULTIPLY)
+                if(followDTO?.followers?.containsKey(currentUserUid)!!){
+                    fragmentView?.accountBtnFollowSignout?.text = activity?.getString(R.string.follow_cancel)
                 }else {
                     if(uid != currentUserUid){
-                        fragmentView.accountBtnFollowSignout.text = getString(R.string.follow)
-                        fragmentView.accountBtnFollowSignout.background.colorFilter = null
+                        fragmentView?.accountBtnFollowSignout?.text = activity?.getString(R.string.follow)
+                        fragmentView?.accountBtnFollowSignout?.background.colorFilter = null
                     }
                 }
-
             }
         }
     }
@@ -208,10 +202,12 @@ class UserFragment : Fragment() {
     }
 
     inner class UserFragmentRecyclerViewAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>(){
-        var contentDTOs : MutableList<ContentDTO> = mutableListOf()
+        var contentDTOs : MutableList<ContentDTO>
 
         init {
+            contentDTOs = mutableListOf()
             firestore?.collection("images")?.whereEqualTo("uid", uid)?.addSnapshotListener { querySnapshot, firebaseFirestoreException ->
+                contentDTOs.clear()
                 if(querySnapshot == null) return@addSnapshotListener
 
                 for(snapshot in querySnapshot.documents){
