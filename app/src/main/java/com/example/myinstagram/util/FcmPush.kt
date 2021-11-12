@@ -10,7 +10,6 @@ class FcmPush {
     var JSON = MediaType.parse("application/json; charset=utf-8")
     var url = "https://fcm.googleapis.com/fcm/send"
     var serverKey = "AAAABZlTv10:APA91bEgtGceIXzU2Bhkk9mLgFWke70VFI0bEQ8HDV3HBhkfJvL4QcF5yNqC10Xz_gEkvw7IJh3rO181Dc8eOPc64KcCLivdzUSji3kumjf8kgd7y0DKsFHJqogU0O6WyEBTKJUgWh3G"
-    var project_id = "24047239005"
 
     var gson : Gson
     var okHttpClient: OkHttpClient
@@ -38,7 +37,6 @@ class FcmPush {
                     .url(url)
                     .addHeader("Content-Type", "application/json")
                     .addHeader("Authorization", "key="+serverKey)
-//                    .addHeader("project_id", project_id)
                     .post(body)
                     .build()
 

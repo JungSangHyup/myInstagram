@@ -73,7 +73,7 @@ class UserFragment : Fragment() {
         }else {
             var mainactivity = ActivityMainBinding.inflate(layoutInflater)
 
-            mainactivity.toolbarUsername?.text = arguments?.getString("userId")
+            mainactivity?.toolbarUsername?.text = arguments?.getString("userId")
             mainactivity?.toolbarBtnBack?.setOnClickListener {
                 mainactivity.bottomNavigation.selectedItemId = R.id.action_home
             }
@@ -129,6 +129,9 @@ class UserFragment : Fragment() {
 
                 if(followDTO?.followers?.containsKey(currentUserUid)!!){
                     fragmentView?.accountBtnFollowSignout?.text = activity?.getString(R.string.follow_cancel)
+                    fragmentView?.accountBtnFollowSignout
+                        ?.background
+                        ?.setColorFilter(ContextCompat.getColor(requireActivity(), R.color.colorLightGray), PorterDuff.Mode.MULTIPLY)
                 }else {
                     if(uid != currentUserUid){
                         fragmentView?.accountBtnFollowSignout?.text = activity?.getString(R.string.follow)
@@ -142,8 +145,7 @@ class UserFragment : Fragment() {
     fun requestFollow(){
         //Save data to my account
         var tsDocFollowing = firestore.collection("users").document(currentUserUid)
-        firestore.runTransaction {
-            transaction ->
+        firestore.runTransaction { transaction ->
             var followDTO = transaction.get(tsDocFollowing).toObject(FollowDTO::class.java)
             if(followDTO == null){
                 followDTO = FollowDTO()
@@ -168,7 +170,6 @@ class UserFragment : Fragment() {
             return@runTransaction
         }
 
-
         var tsDocFollower = firestore.collection("users").document(uid!!)
 
         firestore.runTransaction { transaction ->
@@ -190,7 +191,6 @@ class UserFragment : Fragment() {
             }else{
                 followDTO!!.followerCount = followDTO!!.followerCount + 1
                 followDTO!!.followers[currentUserUid!!] = true
-
             }
             transaction.set(tsDocFollower, followDTO!!)
             return@runTransaction
