@@ -59,11 +59,8 @@ class UserFragment : Fragment() {
         uid = arguments?.getString("destinationUid").toString()
         auth = FirebaseAuth.getInstance()
         currentUserUid = auth.currentUser!!.uid
+        firestore = FirebaseFirestore.getInstance()
 
-        if(currentUserUid == null){
-            activity?.finish()
-            startActivity(Intent(activity, LoginActivity::class.java))
-        }
 
         if(uid == currentUserUid){
             //Mypage
@@ -88,8 +85,9 @@ class UserFragment : Fragment() {
             }
         }
 
+        getProfileImage()
+        getFollowerAndFollowing()
 
-        firestore = FirebaseFirestore.getInstance()
         fragmentView.accountRecyclerview.adapter = UserFragmentRecyclerViewAdapter()
         fragmentView.accountRecyclerview.layoutManager = GridLayoutManager(activity, 3)
 
@@ -98,8 +96,7 @@ class UserFragment : Fragment() {
         }
 
 
-        getProfileImage()
-        getFollowerAndFollowing()
+
         return fragmentView.root
     }
 
@@ -122,8 +119,14 @@ class UserFragment : Fragment() {
             var followDTO = documentSnapshot?.toObject(FollowDTO::class.java)
 
             if(followDTO == null) return@addSnapshotListener
-            if(followDTO?.followerCount != null && uid != currentUserUid){
+            if(followDTO?.followerCount != null){
                 fragmentView.accountTvFollowerCount.text = followDTO.followerCount.toString()
+                fragmentView.accountTvFollowingCount.text = followDTO.followingCount.toString()
+
+                if(uid == currentUserUid){
+                    return@addSnapshotListener
+                }
+
                 if(followDTO?.followers?.containsKey(currentUserUid)!!){
                     fragmentView?.accountBtnFollowSignout?.text = activity?.getString(R.string.follow_cancel)
                 }else {
@@ -146,11 +149,13 @@ class UserFragment : Fragment() {
                 followDTO = FollowDTO()
                 followDTO!!.followingCount = 1
                 followDTO!!.followings[uid!!] = true
+
+                transaction.set(tsDocFollowing, followDTO)
                 followerAlarm(uid!!)
                 return@runTransaction
             }
 
-            if(followDTO.followings.containsKey(uid)){
+            if(followDTO.followings?.containsKey(uid)){
                 //It remove following thir person when a thir person follow me
                 followDTO.followingCount = followDTO.followingCount - 1
                 followDTO.followings.remove(uid)
@@ -162,6 +167,8 @@ class UserFragment : Fragment() {
             transaction.set(tsDocFollowing, followDTO)
             return@runTransaction
         }
+
+
         var tsDocFollower = firestore.collection("users").document(uid!!)
 
         firestore.runTransaction { transaction ->
@@ -169,7 +176,7 @@ class UserFragment : Fragment() {
             if(followDTO == null){
                 followDTO = FollowDTO()
                 followDTO!!.followerCount = 1
-                followDTO!!.followers[uid!!] = true
+                followDTO!!.followers[currentUserUid] = true
 
                 transaction.set(tsDocFollower, followDTO!!)
 
@@ -179,7 +186,7 @@ class UserFragment : Fragment() {
             if(followDTO!!.followers.containsKey(currentUserUid)){
                 //It remove following thir person when a thir person follow me
                 followDTO!!.followerCount = followDTO!!.followerCount - 1
-                followDTO!!.followers.remove(currentUserUid)
+                followDTO!!.followers.remove(currentUserUid!!)
             }else{
                 followDTO!!.followerCount = followDTO!!.followerCount + 1
                 followDTO!!.followers[currentUserUid!!] = true
@@ -188,8 +195,6 @@ class UserFragment : Fragment() {
             transaction.set(tsDocFollower, followDTO!!)
             return@runTransaction
         }
-
-
         //Save data to thir person
     }
 
@@ -200,7 +205,6 @@ class UserFragment : Fragment() {
                 var url = documentSnapshot.data!!["image"]
                 activity?.let { Glide.with(it).load(url).apply(RequestOptions().circleCrop()).into(fragmentView.accountIvProfile) }
             }
-
         }
     }
 
@@ -229,9 +233,7 @@ class UserFragment : Fragment() {
             return CustomViewHolder(imageview)
         }
 
-        inner class CustomViewHolder(var imageview: ImageView) : RecyclerView.ViewHolder(imageview) {
-
-        }
+        inner class CustomViewHolder(var imageview: ImageView) : RecyclerView.ViewHolder(imageview)
 
         override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
             var imageView = (holder as CustomViewHolder).imageview
@@ -242,6 +244,5 @@ class UserFragment : Fragment() {
         override fun getItemCount(): Int {
             return contentDTOs.size
         }
-
     }
 }
