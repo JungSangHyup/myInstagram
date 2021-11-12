@@ -23,12 +23,12 @@
 
         <Button
             android:id="@+id/account_btn_follow_signout"
-            android:textColor="@color/black"
             android:layout_width="match_parent"
             android:layout_height="48dp"
             android:layout_alignParentBottom="true"
             android:layout_toRightOf="@id/account_iv_profile"
             android:text="@string/follow"
+            android:textColor="@color/black"
             android:theme="@style/ButtonStyle" />
         <LinearLayout
             android:layout_width="match_parent"

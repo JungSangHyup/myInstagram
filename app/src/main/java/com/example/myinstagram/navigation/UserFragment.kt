@@ -62,6 +62,11 @@ class UserFragment : Fragment() {
         auth = FirebaseAuth.getInstance()
         currentUserUid = auth.currentUser!!.uid
 
+        if(currentUserUid == null){
+            activity?.finish()
+            startActivity(Intent(activity, LoginActivity::class.java))
+        }
+
         if(uid == currentUserUid){
             //Mypage
             fragmentView?.accountBtnFollowSignout.text = getString(R.string.signout)
@@ -71,9 +76,6 @@ class UserFragment : Fragment() {
                 auth?.signOut()
             }
         }else {
-            //OtherUserpage
-            fragmentView?.accountBtnFollowSignout.text = getString(R.string.follow)
-
             var mainactivity = ActivityMainBinding.inflate(layoutInflater)
 
             mainactivity.toolbarUsername?.text = arguments?.getString("userId")
@@ -94,7 +96,7 @@ class UserFragment : Fragment() {
         view.accountRecyclerview.layoutManager = GridLayoutManager(activity, 3)
 
         view.accountIvProfile.setOnClickListener {
-            var image = photoPickterLauncher.launch("image/*")
+            photoPickterLauncher.launch("image/*")
         }
 
         getProfileImage()
