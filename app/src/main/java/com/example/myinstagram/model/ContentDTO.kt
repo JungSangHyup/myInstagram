@@ -2,6 +2,7 @@ package com.example.myinstagram.model
 
 data class ContentDTO(var explain: String? = null,
                       var imageUrl: String? = null,
+                      var imageFileName: String? = null,
                       var uid: String? = null,
                       var userId: String? = null,
                       var timestamp: Long? = null,

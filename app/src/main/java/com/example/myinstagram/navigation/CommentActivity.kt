@@ -86,12 +86,7 @@ class CommentActivity :AppCompatActivity() {
 
     fun contentDelete() {
 
-//        var imageFileName : String
-//        firestore.collection("images").document(contentUid!!)
-//        .addSnapshotListener { value, error ->
-//            imageFileName = value?.data?.get("imageUrl").toString()
-//            Log.d("imageFileName", imageFileName);
-//        }
+
 
         val builder = AlertDialog.Builder(this, R.style.AlertDialogStyle)
 
@@ -102,14 +97,22 @@ class CommentActivity :AppCompatActivity() {
         var listener = DialogInterface.OnClickListener { dialog, which ->
             when(which){
                 DialogInterface.BUTTON_POSITIVE -> {
+                    var imageFileName : String
                     firestore.collection("images").document(contentUid!!)
-                        .delete()
-                        .addOnSuccessListener {
-                            Toast.makeText(this, "게시물을 삭제하였습니다.", Toast.LENGTH_LONG);
+                        .addSnapshotListener { value, error ->
+                            imageFileName = value?.data?.get("imageFileName").toString()
 
-                            var intent = Intent(this, MainActivity::class.java)
-                            startActivity(intent)
+                            var storageRef = storage?.reference?.child("images/" + imageFileName)
+                            storageRef.delete().addOnSuccessListener {  }
                         }
+
+                    firestore.collection("images").document(contentUid!!)
+                        .delete().addOnSuccessListener {  }
+
+                    Toast.makeText(this, "게시물을 삭제하였습니다.", Toast.LENGTH_LONG);
+
+                    var intent = Intent(this, MainActivity::class.java)
+                    startActivity(intent)
                 }
                 DialogInterface.BUTTON_NEGATIVE -> {
                     return@OnClickListener

@@ -78,6 +78,7 @@ class AddPhotoActivity : AppCompatActivity(){
             var contentDTO = ContentDTO()
 
             contentDTO.imageUrl = uri.toString()
+            contentDTO.imageFileName = imageFileName
             contentDTO.uid = auth?.currentUser?.uid
             contentDTO.userId = auth?.currentUser?.email
             contentDTO.explain = binding.addphotoEditExplain.text.toString()
