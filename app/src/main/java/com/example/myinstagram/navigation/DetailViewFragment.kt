@@ -353,6 +353,7 @@ class DetailViewFragment : Fragment() {
                         holder.binding.detailviewitemCommentImageview.setOnClickListener { v ->
                             var intent = Intent(v.context, CommentActivity::class.java)
                             intent.putExtra("contentUid", contentUidList[position])
+                            intent.putExtra("uid", contentDTOs[position].uid)
                             intent.putExtra("destinationUid", contentDTOs[position].uid)
                             startActivity(intent)
                         }

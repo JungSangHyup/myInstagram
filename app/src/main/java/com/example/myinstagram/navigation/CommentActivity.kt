@@ -1,14 +1,22 @@
 package com.example.myinstagram.navigation
 
+import android.app.AlertDialog
 import android.content.Context
+import android.content.DialogInterface
+import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.graphics.toColor
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
+import com.example.myinstagram.MainActivity
 import com.example.myinstagram.R
 import com.example.myinstagram.databinding.ActivityCommentBinding
 import com.example.myinstagram.databinding.ItemCommentBinding
@@ -17,19 +25,35 @@ import com.example.myinstagram.model.ContentDTO
 import com.example.myinstagram.util.FcmPush
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
+import java.util.*
 
 class CommentActivity :AppCompatActivity() {
     val activityCommentBinding by lazy { ActivityCommentBinding.inflate(layoutInflater) }
     lateinit var destinationUid: String
     lateinit var contentUid: String
+    lateinit var uid: String
+
+
+    lateinit var auth : FirebaseAuth
+    lateinit var storage : FirebaseStorage
+    lateinit var firestore : FirebaseFirestore
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(activityCommentBinding.root)
 
-        var inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE)
+
+
+        storage = FirebaseStorage.getInstance()
+        auth = FirebaseAuth.getInstance()
+        firestore = FirebaseFirestore.getInstance()
+
+        getSystemService(Context.INPUT_METHOD_SERVICE)
 
         contentUid = intent.getStringExtra("contentUid").toString()
         destinationUid = intent.getStringExtra("destinationUid").toString()
+        uid = intent.getStringExtra("uid").toString()
 
         activityCommentBinding.commentRecyclerview.adapter = CommentRecyclerviewAdapter()
         activityCommentBinding.commentRecyclerview.layoutManager = LinearLayoutManager(this)
@@ -47,7 +71,56 @@ class CommentActivity :AppCompatActivity() {
             activityCommentBinding.commentEditMessage.setText("")
         }
 
+        if(uid == auth.currentUser!!.uid){
+            activityCommentBinding.detailviewitemDelBtn.visibility = View.VISIBLE
+            activityCommentBinding.detailviewitemDelBtn.setOnClickListener {
+                contentDelete()
+            }
+        }else {
+            activityCommentBinding.detailviewitemDelBtn.visibility = View.INVISIBLE
+        }
+
+
         getImage(contentUid)
+    }
+
+    fun contentDelete() {
+
+//        var imageFileName : String
+//        firestore.collection("images").document(contentUid!!)
+//        .addSnapshotListener { value, error ->
+//            imageFileName = value?.data?.get("imageUrl").toString()
+//            Log.d("imageFileName", imageFileName);
+//        }
+
+        val builder = AlertDialog.Builder(this, R.style.AlertDialogStyle)
+
+        builder.setTitle("콘텐츠 삭제")
+        builder.setMessage("삭제하시겠습니까?")
+        builder.setIcon(R.mipmap.ic_launcher)
+
+        var listener = DialogInterface.OnClickListener { dialog, which ->
+            when(which){
+                DialogInterface.BUTTON_POSITIVE -> {
+                    firestore.collection("images").document(contentUid!!)
+                        .delete()
+                        .addOnSuccessListener {
+                            Toast.makeText(this, "게시물을 삭제하였습니다.", Toast.LENGTH_LONG);
+
+                            var intent = Intent(this, MainActivity::class.java)
+                            startActivity(intent)
+                        }
+                }
+                DialogInterface.BUTTON_NEGATIVE -> {
+                    return@OnClickListener
+                }
+            }
+        }
+
+        builder.setPositiveButton("예", listener)
+        builder.setNegativeButton("아니요", listener)
+
+        builder.show()
     }
 
     fun getImage(contentUid: String){
