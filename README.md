@@ -18,5 +18,4 @@ AndroidStudio + Kotlin + Firebase 로 만들어본 인스타그램 클론 코딩
 
 ##### 해시태그
 
-![image](https://user-images.githubusercontent.com/51068026/142094388-dc0b1b98-a14b-49cf-a493-e72c3597da90.png)
-
+![그림1](https://user-images.githubusercontent.com/51068026/142094532-cf6332b3-4bb2-4873-8851-f037cc885a17.gif)
