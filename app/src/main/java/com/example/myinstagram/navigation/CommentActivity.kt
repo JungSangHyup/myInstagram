@@ -190,14 +190,13 @@ class CommentActivity :AppCompatActivity() {
                 .document(comments[position].uid!!)
                 .get()
                 .addOnCompleteListener { task ->
-                    if(task.isSuccessful){
+                    if (task.isSuccessful) {
                         var url = task.result["image"]
-                        Glide.with(holder.itemView.context).load(url).apply(RequestOptions().circleCrop()).into(holder.binding.commentviewitemImageviewProfile)
+                        Glide.with(holder.itemView.context).load(url)
+                            .apply(RequestOptions().circleCrop())
+                            .into(holder.binding.commentviewitemImageviewProfile)
                     }
                 }
-
-
-
         }
 
         override fun getItemCount(): Int {
