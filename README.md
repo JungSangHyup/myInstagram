@@ -2,6 +2,17 @@
 
 AndroidStudio + Kotlin + Firebase 로 만들어본 인스타그램 클론 코딩
 
+## 개발구성
+- ### ERD-Schedule
+![image](https://user-images.githubusercontent.com/51068026/145673872-57944ff6-6796-4e1e-a15b-96e5cee1caab.png)
+
+- ### DB 컬렉션
+Firebase Firestore를 이용한 실시간 비동기 앱 구현
+![image](https://user-images.githubusercontent.com/51068026/145673927-cf07b79b-6c7b-4e86-bbbb-c3cdf58e5e19.png)
+![image](https://user-images.githubusercontent.com/51068026/145673942-84fc564a-4681-4a96-a3be-74930026f5a3.png)
+![image](https://user-images.githubusercontent.com/51068026/145673958-7bb0b56a-3c2d-480f-94fa-05602cc6cc8a.png)
+![image](https://user-images.githubusercontent.com/51068026/145673962-aa87e154-c852-4a73-957e-bb9b55279421.png)
+
 ## 화면 기능 구현
 
 ##### 로그인
@@ -19,3 +30,5 @@ AndroidStudio + Kotlin + Firebase 로 만들어본 인스타그램 클론 코딩
 ##### 해시태그
 
 ![그림1](https://user-images.githubusercontent.com/51068026/142094532-cf6332b3-4bb2-4873-8851-f037cc885a17.gif)
+
+##### 같이 해준 팀원에게 감사합니다.
