@@ -3,7 +3,7 @@
 AndroidStudio + Kotlin + Firebase 로 만들어본 인스타그램 클론 코딩
 
 ## 개발구성
-- ### ERD-Schedule
+- ERD-Schedule
 - 회원 외 구글, 페이스북을 연동한 사용자인증
 - 알람 기능
 - Firebase Firestore를 이용한 실시간 비동기 앱 구현
